@@ -1,60 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="theme.css">
 </head>
 <body>
-	<div id="results"></div>
+	<a href="uploader.html">To Uploader</a>
+	<br>
 	<input type="text" id="searchField">
-	<button onclick="write_to_table()">Go</button>
+	<button onclick="write_to_table('list.json')">Go</button>
 	<table id="table"></table>
 	<script>
 		/*<!-- https://www.youtube.com/watch?v=BSi4iUlzBiU&list=WL&index=23 --> */
-		function ajax_get_json() {
-			var results = document.getElementById("results");
-		    var hr = new XMLHttpRequest();
-		    hr.open("GET", "list.json", true);
-		    hr.setRequestHeader("Content-type", "application/json", true);
-		    hr.onreadystatechange = function() {
-			    if(hr.readyState == 4 && hr.status == 200) {
-				    var data = JSON.parse(hr.responseText);
-					results.innerHTML = "";
-					for(var obj in data){
-						results.innerHTML += data[obj].user+" is "+data[obj].age+" and lives in "+data[obj].country+"<hr />";
-					}
-			    }
-		    }
-		    hr.send(null);
-		    results.innerHTML = "requesting...";
-		}
-
-		function write_to_table() {
+		function write_to_table(url) {
 			var table = document.getElementById("table");
-			var searchField = document.getElementById("searchField");
 		    var hr = new XMLHttpRequest();
-		    hr.open("GET", "list.json", true);
+		    hr.open("GET", url, true);
 		    hr.setRequestHeader("Content-type", "application/json", true);
 		    hr.onreadystatechange = function() {
 			    if(hr.readyState == 4 && hr.status == 200) {
 				    var data = JSON.parse(hr.responseText);
 					table.innerHTML = "";
-					var i, k = 0;
+					var i = 0;
 					for(var obj in data) {
-						//if(obj.localeCompare(searchField.value) == 0) {   //retrieve matching obj in data's main indices
-							var row = table.insertRow(i++);
-							row.style.backgroundColor = "gray";
-							k = 0;
-							for(var inner_obj in data[obj]) {
-								var cell = row.insertCell(k++);
-								cell.innerHTML = data[obj][inner_obj];
-							}
-						//}	
+						var row = table.insertRow(i++);
+						row.style.backgroundColor = "";
+						k = 0;
+						for(var inner_obj in data[obj]) {   
+							var cell = row.insertCell(k++);
+							cell.innerHTML = data[obj][inner_obj];
+						}
+					}
+					var table_head_row = table.createTHead().insertRow(0);     /* set header */
+    				var i = 0;
+					for(var obj in data) {   
+						if(i > 0) {
+							break;
+						}
+						i++;
+						k = 0;
+						for(var inner_obj in data[obj]) {   
+							var cell = table_head_row.insertCell(k++);
+							cell.innerHTML = inner_obj;
+						}						
 					}
 			    }
 		    }
 		    hr.send(null);
 		    table.innerHTML = "requesting...";
 		}
-		ajax_get_json();
 	</script>
 </body>
 </html>
